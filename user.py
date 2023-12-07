@@ -7,8 +7,7 @@ class User:
         self.login: str = login
         self.password: str = password
         self.bdd : BDD = BDD("base")
-      
-        
+    
     def login(self) -> bool:
         try:
             result: sqlite3.Cursor = self.bdd.select(("users", self.login, f'password = {hash(self.password)}'))

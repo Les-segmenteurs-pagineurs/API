@@ -31,4 +31,23 @@ class BDD:
         self.cursor.execute("SELECT ? FROM ? WHERE ?",args)
         return self.cursor
 
+    def init_bdd(self):
+        user_request = """CREATE TABLE IF NOT EXISTS 
+                            users(login VARCHAR2 PRIMARY KEY NOT NULL, 
+                            passwd VARCHAR2 NOT NULL)"""
+                            
+        games_request = """CREATE TABLE IF NOT EXISTS  
+                            games (id INT NOT NULL AUTO_INCREMENT ,
+                                   user_login VARCHAR2 NOT NULL,
+                                   score INT NOT NULL , 
+                                   FOREIGN KEY (user_login) REFERENCES users(login) ON DELETE CASCADE)"""
+        try:
+            self.conn.execute("PRAGMA foreign_keys = ON")
+            self.cursor.execute(games_request)
+            self.cursor.execute(user_request)
+            self.conn.commit()
+        except Exception as e: 
+            print(f'error initing tables : {e}')
+            self.conn.rollback()
+                
             
