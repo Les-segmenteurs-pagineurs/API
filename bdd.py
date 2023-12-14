@@ -32,20 +32,55 @@ class BDD:
         return self.cursor
 
     def init_bdd(self):
-        user_request = """CREATE TABLE IF NOT EXISTS 
-                            users(login VARCHAR2 PRIMARY KEY NOT NULL, 
-                            passwd VARCHAR2 NOT NULL)"""
+        user_request = """CREATE TABLE IF NOT EXISTS users(
+                            login VARCHAR2 PRIMARY KEY, 
+                            password VARCHAR2 NOT NULL
+                        )"""
                             
-        games_request = """CREATE TABLE IF NOT EXISTS  
-                            games (id INT NOT NULL AUTO_INCREMENT ,
-                                   user_login VARCHAR2 NOT NULL,
-                                   score INT NOT NULL , 
-                                   FOREIGN KEY (user_login) REFERENCES users(login) ON DELETE CASCADE)"""
+        games_request = """CREATE TABLE IF NOT EXISTS games (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                user_login VARCHAR2 NOT NULL,
+                                score INTEGER NOT NULL , 
+                                FOREIGN KEY (user_login) REFERENCES users(login) ON DELETE CASCADE
+                        )"""
+                                   
+        questions_request = """CREATE TABLE IF NOT EXISTS questions (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    title VARCHAR2 NOT NULL,
+                                    is_multiple BOOLEAN NOT NULL
+                            )"""
+                                           
+        questions_answers_request = """CREATE TABLE IF NOT EXISTS questions_answers (
+                                        id_question INTEGER NOT NULL,
+                                        id_answer INTEGER NOT NULL,
+                                        is_correct BOOLEAN NOT NULL,
+                                        FOREIGN KEY (id_question) REFERENCES questions(id) ON DELETE CASCADE,
+                                        FOREIGN KEY (id_answer) REFERENCES answers(id) ON DELETE CASCADE
+                                    )"""
+                                                          
+        answers_request = """CREATE TABLE IF NOT EXISTS answers (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                answer_text VARCHAR2 NOT NULL
+                            )"""
+                                         
+        ideerecu = """CREATE TABLE IF NOT EXISTS idees_recues
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title VARCHAR2 NOT NULL,
+                        ideerecu_text VARCHAR2 NOT NULL
+                    )"""
+
         try:
             self.conn.execute("PRAGMA foreign_keys = ON")
-            self.cursor.execute(games_request)
             self.cursor.execute(user_request)
+            self.cursor.execute(games_request)
+            self.cursor.execute(questions_request)
+            self.cursor.execute(answers_request)
+            self.cursor.execute(questions_answers_request)
+            # self.cursor.execute(ideerecu)
             self.conn.commit()
+           
+
+            
         except Exception as e: 
             print(f'error initing tables : {e}')
             self.conn.rollback()
